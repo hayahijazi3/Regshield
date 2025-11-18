@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <script>
+  const BACKEND_URL = "http://127.0.0.1:5001";
+  function getToken(){ return localStorage.getItem("token") || sessionStorage.getItem("token"); }
+  async function ensureAuth(){
+    const t = getToken();
+    if (!t){ location.replace("login.html?from=index.html"); return; }
+    try{
+      const r = await fetch(`${BACKEND_URL}/auth/me`, { headers: { Authorization: `Bearer ${t}` }});
+      if (!r.ok) throw new Error("invalid token");
+      window.__AUTH_OK__ = true;
+    }catch{
+      localStorage.removeItem("token"); sessionStorage.removeItem("token");
+      location.replace("login.html?from=index.html");
+    }
+  }
+  document.documentElement.style.visibility="hidden";
+  ensureAuth().finally(()=>{ document.documentElement.style.visibility=""; });
+  </script>
+
+  <head>
+    <meta charset="utf-8" />
+    <title>Clause Search</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="./search.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <div class="brand">
+          <div class="logo-header">
+            <img src="LOGO-REG.PNG" width="40" height="40" alt="logo">
+            <h1>Clause Search</h1>
+          </div>
+        </div>
+        <nav class="top-links">
+          <a href="policy-compare.html" class="semi-bold-link">Policy Compare</a>
+          <button id="logoutBtn" class="logout-btn" type="button" title="Log out">Log out</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page">
+      <form id="searchForm" class="toolbar">
+        <div class="field">
+          <label for="q">Query</label>
+          <input id="q" class="input" placeholder="e.g. data breach notification 72 hours PDPL" value="data breach notification 72 hours PDPL" />
+        </div>
+
+        <div class="field">
+          <label for="topK">Max results</label>
+          <input id="topK" class="input" type="number" min="5" max="10" step="1" value="10" />
+        </div>
+
+        <div class="field">
+          <label for="source">Document</label>
+          <select id="source" class="input">
+            <option value="all" selected>Both</option>
+            <option value="pdpl">PDPL</option>
+            <option value="ecc">ECC</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="method">Method</label>
+          <select id="method" class="input">
+            <option value="lexical">Lexical (TF-IDF)</option>
+            <option value="semantic">Semantic (MiniLM)</option>
+            <option value="hybrid">Hybrid (alpha blend)</option>
+            <option value="rag" selected>RAG (LLM answer)</option>
+          </select>
+        </div>
+
+        <div class="field row-end">
+          <button id="searchBtn" class="btn btn--primary" type="submit">Search</button>
+        </div>
+
+        <div class="field" style="grid-column: 1 / -1;">
+          <label for="alpha">Alpha (Hybrid only)</label>
+          <div class="alpha-wrap">
+            <input id="alpha" class="input" type="number" step="0.05" min="0" max="1" value="0.6" />
+            <span class="muted" id="alphaHint">active</span>
+          </div>
+        </div>
+      </form>
+
+      <div class="status-row">
+        <div id="loader" class="loader" style="display:none;"></div>
+      </div>
+
+      <div class="stats">
+        <span id="statText"></span>
+        <span id="countPill" class="pill" style="display:none"></span>
+      </div>
+      <div id="err" class="error" style="display:none"></div>
+
+      <!-- LLM Answer (only for RAG) -->
+      <section id="llmAnswer" class="card" style="display:none"></section>
+
+      <section id="results" class="results" aria-live="polite"></section>
+    </main>
+
+    <script src="./search.js"></script>
+    <script>
+      (function () {
+        function logout(){
+          localStorage.removeItem('token'); sessionStorage.removeItem('token');
+          window.location.assign('login.html');
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+          const btn = document.getElementById('logoutBtn');
+          if (btn) btn.addEventListener('click', logout);
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Policy vs Regulations — Compare</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="./policy-compare.css" />
+    <script>
+      const BACKEND_URL = "http://127.0.0.1:5001";
+      function getToken(){ return localStorage.getItem("token") || sessionStorage.getItem("token"); }
+      async function ensureAuth(){
+        const t = getToken();
+        if (!t){ location.replace("login.html?from=policy-compare.html"); return; }
+        try {
+          const r = await fetch(`${BACKEND_URL}/auth/me`, { headers: { Authorization: `Bearer ${t}` }});
+          if (!r.ok) throw new Error("invalid");
+          window.__AUTH_OK__ = true;
+        } catch {
+          localStorage.removeItem("token"); sessionStorage.removeItem("token");
+          location.replace("login.html?from=policy-compare.html");
+        }
+      }
+      document.documentElement.style.visibility="hidden";
+      ensureAuth().finally(()=>{ document.documentElement.style.visibility=""; });
+    </script>
+  </head>
+  <body>
+    <header class="pc-header">
+      <div class="wrap">
+        <div class="logo-header">
+          <img src="LOGO-REG.PNG" width="40" height="40" alt="logo">
+          <h1>Policy ⇄ Regulation Comparison</h1>
+        </div>
+        <nav class="top-links">
+          <a href="index.html"  class="semi-bold-link">Clause Search</a>
+          <button id="logoutBtn" class="logout-btn" type="button" title="Log out">Log out</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="pc-main">
+      <section class="uploader">
+        <form id="uploadForm">
+          <div class="file-row">
+            <input id="file" type="file" accept=".pdf,.docx,.txt" required />
+            <select id="method" title="retrieval/generation mode">
+              <option value="hybrid" selected>Hybrid</option>
+              <option value="semantic">Semantic</option>
+              <option value="lexical">Lexical</option>
+              <option value="rag">RAG</option>
+            </select>
+            <select id="sources" title="documents to search">
+              <option value="all" selected>Both</option>
+              <option value="pdpl">PDPL</option>
+              <option value="ecc">ECC</option>
+            </select>
+            <input id="topk" type="number" min="1" max="8" value="3" />
+            <button class="btn btn-primary" type="submit">Compare</button>
+            <button id="exportBtn" class="btn" type="button" title="Export PDF">Export PDF</button>
+          </div>
+          <p class="hint">Upload a policy (PDF/DOCX/TXT). We’ll match sections to PDPL/ECC and, for RAG, ask Gemini to summarize/cite.</p>
+        </form>
+        <div class="status-row">
+          <div id="loader" class="loader" style="display:none;"></div>
+          <div id="status" class="status"></div>
+        </div>
+        <div id="error" class="error" role="alert"></div>
+      </section>
+
+      <section id="results" class="results" aria-live="polite"></section>
+    </main>
+
+    <script src="./policy-compare.js"></script>
+    <script>
+      (function () {
+        function logout(){
+          localStorage.removeItem('token'); sessionStorage.removeItem('token');
+          window.location.assign('login.html?from=policy-compare.html');
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+          const btn = document.getElementById('logoutBtn');
+          if (btn) btn.addEventListener('click', logout);
+        });
+      })();
+    </script>
+  </body>
+</html>
