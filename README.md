@@ -53,7 +53,6 @@ High level:
   - Interface for uploading and comparing policies.  
   - Displays ranked clauses, scores, and gap analysis.
 
-(You can add an architecture image here later, for example `![Architecture](./docs/architecture.png)`.)
 
 ---
 
@@ -63,9 +62,8 @@ Tech Stack
 - **Retrieval**: TF-IDF, MiniLM embeddings, RAG  
 - **Frontend**: React, JavaScript 
 - **Vector Store / Indexing**: local storage
-- **Others**: dotenv for environment variables, requests, etc.
 
----
+
 
 
 
