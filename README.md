@@ -4,7 +4,7 @@ RegShield is an AI-based compliance assistant that helps organizations measure t
 
 ---
 
-##Overview
+Overview
 
 RegShield analyzes regulatory texts and organizational policies to:
 
@@ -17,7 +17,7 @@ The system supports four retrieval modes: lexical, semantic, hybrid, and RAG. Th
 
 ---
 
-##Key Features
+Key Features
 
 - Clause-level search over PDPL and NCA-ECC.
 - Multiple retrieval modes:
@@ -32,7 +32,7 @@ The system supports four retrieval modes: lexical, semantic, hybrid, and RAG. Th
 
 ---
 
-##System Architecture
+System Architecture
 
 High level:
 
@@ -57,7 +57,7 @@ High level:
 
 ---
 
-##Tech Stack
+Tech Stack
 
 - **Backend**: Python,   
 - **Retrieval**: TF-IDF, MiniLM embeddings, RAG  
