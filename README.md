@@ -28,7 +28,6 @@ Key Features
 - Query-based compliance questions.
 - Policy comparison to detect coverage gaps.
 - Backend API built with FastAPI.
-- Frontend built with React (Vite) for interactive use.
 
 ---
 
@@ -60,7 +59,7 @@ Tech Stack
 
 - **Backend**: Python,   
 - **Retrieval**: TF-IDF, MiniLM embeddings, RAG  
-- **Frontend**: React, JavaScript 
+- **Frontend**: HTML, CSS
 - **Vector Store / Indexing**: local storage
 
 
